@@ -1,0 +1,34 @@
+DESCRIPTION: TGI model.
+              
+This model is based on:
+Stein WD, Gulley JL, Schlom J, et al. Tumor regression and growth rates determined in five intramural NCI prostate cancer trials: the growth rate constant as an indicator of therapeutic efficacy. Clin Cancer Res. 2011;17(4):907-917. doi:10.1158/1078-0432.CCR-10-1762
+
+It is a regression-growth model that goes as follows:
+
+TS = TS0*(exp(-kkill*t)+exp(kge*t)-1)
+
+where:
+- TS is the size of the tumor cell population.
+- V0 is the tumor size at T0.
+- T0 is the earliest time.
+- kge is the tumor exponential growth rate.
+- kkill is the treatment-induced tumor kill/shrinkage rate (exponential decay).
+
+The treatment effect is delayed. 
+
+[LONGITUDINAL]
+input = {V0, T0, kge, kkill,F}
+V0 = {use=regressor}
+T0 = {use=regressor}
+
+
+EQUATION:
+
+if t < 0 ; before treatment (kkill = 0)
+ TS = V0*exp(kge*(t-T0))
+else
+ TS = V0*exp(kge*(-T0))*(F*exp(kge*t)+(1-F)*exp(-kkill*t))
+end
+
+OUTPUT:
+output = {TS}
