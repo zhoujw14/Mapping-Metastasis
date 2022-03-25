@@ -1,0 +1,60 @@
+<DATAFILE>
+
+[FILEINFO]
+file='265target_monolix.csv'
+delimiter = comma
+header = {lesionID, time, size, shortaxis, volume, V0, T0, CENSORING, LIMIT, DV, time_o, T02}
+
+[CONTENT]
+lesionID = {use=identifier}
+time = {use=time}
+V0 = {use=regressor}
+T0 = {use=regressor}
+CENSORING = {use=censored}
+LIMIT = {use=limit}
+DV = {use=observation, name=DV, type=continuous}
+
+<MODEL>
+
+[INDIVIDUAL]
+input = {F_pop, omega_F, kge_pop, omega_kge, kkill_pop, omega_kkill}
+
+DEFINITION:
+F = {distribution=logitNormal, typical=F_pop, sd=omega_F}
+kge = {distribution=logNormal, typical=kge_pop, sd=omega_kge}
+kkill = {distribution=logNormal, typical=kkill_pop, sd=omega_kkill}
+
+[LONGITUDINAL]
+input = {b}
+
+file = 'new.txt'
+
+DEFINITION:
+DV = {distribution=normal, prediction=TS, errorModel=proportional(b)}
+
+<FIT>
+data = DV
+model = DV
+
+<PARAMETER>
+F_pop = {value=0.1, method=MLE}
+b = {value=0.3, method=MLE}
+kge_pop = {value=0.01, method=MLE}
+kkill_pop = {value=0.01, method=MLE}
+omega_F = {value=1, method=MLE}
+omega_kge = {value=1, method=MLE}
+omega_kkill = {value=1, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(method = StochasticApproximation)
+logLikelihood(run = false,method = ImportanceSampling)
+plotResult(method = {indfits, parameterdistribution, covariancemodeldiagnosis, covariatemodeldiagnosis, obspred, vpc, residualsscatter, residualsdistribution, randomeffects, saemresults })
+
+[SETTINGS]
+GLOBAL:
+exportpath = 'model265'
+
