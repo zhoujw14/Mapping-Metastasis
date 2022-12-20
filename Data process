@@ -1,0 +1,250 @@
+# Data process
+
+library(dplyr)
+
+data78 <- read.csv(file='78data.csv',header=T)
+data78$study <- 78
+names(data78)[names(data78) == "RANDCODE"] <- "SUBJID"
+names(data78)[names(data78) == "time"] <- "Time"
+names(data78)[names(data78) == "site"] <- "Site"
+names(data78)[names(data78) == "size"] <- "Size"
+names(data78)[names(data78) == "ACTTRTXT"] <- "TRT"
+names(data78)[names(data78) == "B_METANM"] <- "MET"
+names(data78)[names(data78) == "BMIBL"] <- "BMI"
+names(data78)[names(data78) == "PD"] <- "Response"
+names(data78)[names(data78) == "PFSDYCR"] <- "PFS"
+data78_2 <- data78[,c('study','SUBJID','Time','lesionType','lesionID','Site','Size',
+                      'AGE','SEX','RACE','TRT','MET','DIAGTYPE','PRSURG','PRRADIO',
+                      'BMI','Response','PFSDY','PFS','DTHDY','DTH')]
+##########################################################################
+##########################################################################
+data114 <- read.csv(file='114data.csv',header=T)
+data114$study <- 114
+names(data114)[names(data114) == "EFDAY"] <- "Time"
+names(data114)[names(data114) == "LESTYPE"] <- "lesionType"
+names(data114)[names(data114) == "TMMLNM"] <- "lesionID"
+names(data114)[names(data114) == "TMMDIS"] <- "Site"
+names(data114)[names(data114) == "TMMDIA"] <- "Size"
+names(data114)[names(data114) == "SEXC"] <- "SEX"
+names(data114)[names(data114) == "RACESC"] <- "RACE"
+
+target <- data114[data114$lesionType == 'Target',]
+target2 <- unique(target[,c(1,12)])
+target3 <- target2 %>%
+  group_by(SUBJID) %>%
+  summarise(MET = n())
+target3 <- target2%>%
+  group_by(SUBJID, Site) %>%
+  summarise(MET = n(unique(Site)))
+
+temp <- merge(data114, target3, by='SUBJID')
+temp$DIAGTYPE <- 'colon/rectal'
+names(temp)[names(temp) == "SURGERY"] <- "PRSURG"
+names(temp)[names(temp) == "RADIO"] <- "PRRADIO"
+temp$BMI <- temp$WT / (temp$HT * temp$HT *0.01 *0.01)
+names(temp)[names(temp) == "response"] <- "Response"
+temp$PFSDY <- NA
+temp$PFS <- NA
+temp$DTHDY <- NA
+temp$DTH <- NA
+
+data114_2 <- as.data.frame(unique(temp[,c('study','SUBJID','Time','lesionType','lesionID','Site','Size',
+                                            'AGE','SEX','RACE','TRT','MET','DIAGTYPE','PRSURG','PRRADIO',
+                                            'BMI','Response','PFSDY','PFS','DTHDY','DTH')]))
+######################################################################
+######################################################################
+data131 <- read.csv(file='131data.csv',header=T)
+data131$study <- 131
+names(data131)[names(data131) == "time"] <- "Time"
+names(data131)[names(data131) == "LSCAT"] <- "lesionType"
+names(data131)[names(data131) == "LSSPID"] <- "lesionID"
+names(data131)[names(data131) == "LSLOC"] <- "Site"
+names(data131)[names(data131) == "size"] <- "Size"
+names(data131)[names(data131) == "AGEC"] <- "AGE"
+names(data131)[names(data131) == "ARM"] <- "TRT"
+
+target <- data131[data131$lesionType == 'TARGET',]
+target2 <- unique(target[,c('SUBJID','Site')])
+target3 <- target2 %>%
+  group_by(SUBJID) %>%
+  summarise(MET = n())
+temp <- merge(data131, target3, by='SUBJID')
+
+names(temp)[names(temp) == "CDSTRESC"] <- "DIAGTYPE"
+names(temp)[names(temp) == "SURGERY"] <- "PRSURG"
+temp$PRRADIO <- NA
+names(temp)[names(temp) == "response"] <- "Response"
+temp$PFSDY <- NA
+temp$PFS <- NA
+
+data131_2 <-  as.data.frame(unique(temp[,c('study','SUBJID','Time','lesionType','lesionID','Site','Size',
+                                           'AGE','SEX','RACE','TRT','MET','DIAGTYPE','PRSURG','PRRADIO',
+                                           'BMI','Response','PFSDY','PFS','DTHDY','DTH')]))
+######################################################################
+######################################################################
+data136 <- read.csv(file='136data.csv',header=T)
+data136$study <- 136
+names(data136)[names(data136) == "time"] <- "Time"
+names(data136)[names(data136) == "organ"] <- "Site"
+names(data136)[names(data136) == "size"] <- "Size"
+
+target <- data136[data136$lesionType == 'Target',]
+target2 <- unique(target[,c('SUBJID','Site')])
+target3 <- target2 %>%
+  group_by(SUBJID) %>%
+  summarise(MET = n())
+temp <- merge(data136, target3, by='SUBJID')
+
+names(temp)[names(temp) == "TYPE"] <- "DIAGTYPE"
+names(temp)[names(temp) == "SURGERY"] <- "PRSURG"
+names(temp)[names(temp) == "RADIO"] <- "PRRADIO"
+names(temp)[names(temp) == "PD"] <- "Response"
+names(temp)[names(temp) == "PFSDYCR"] <- "PFSDY"
+names(temp)[names(temp) == "PFSCR"] <- "PFS"
+data136_2 <-  as.data.frame(unique(temp[,c('study','SUBJID','Time','lesionType','lesionID','Site','Size',
+                                           'AGE','SEX','RACE','TRT','MET','DIAGTYPE','PRSURG','PRRADIO',
+                                           'BMI','Response','PFSDY','PFS','DTHDY','DTH')]))
+######################################################################
+######################################################################
+
+alldata <- rbind(data78_2, data114_2, data131_2, data136_2)
+write.csv(alldata, file='alldata.csv')
+
+#######################################################################
+#######################################################################
+data137 <- read.csv(file='137data.csv',header=T)
+data137$study <- 137
+names(data137)[names(data137) == "time"] <- "Time"
+names(data137)[names(data137) == "organ"] <- "Site"
+names(data137)[names(data137) == "size"] <- "Size"
+
+target <- data137[data137$lesionType == 'Target',]
+target2 <- unique(target[,c('SUBJID','Site')])
+target3 <- target2 %>%
+  group_by(SUBJID) %>%
+  summarise(MET = n())
+temp <- merge(data137, target3, by='SUBJID')
+
+names(temp)[names(temp) == "TYPE"] <- "DIAGTYPE"
+names(temp)[names(temp) == "SURGERY"] <- "PRSURG"
+names(temp)[names(temp) == "RADIO"] <- "PRRADIO"
+names(temp)[names(temp) == "PD"] <- "Response"
+names(temp)[names(temp) == "PFSDYCR"] <- "PFSDY"
+names(temp)[names(temp) == "PFSCR"] <- "PFS"
+data137_2 <-  as.data.frame(unique(temp[,c('study','SUBJID','Time','lesionType','lesionID','Site','Size',
+                                           'AGE','SEX','RACE','TRT','MET','DIAGTYPE','PRSURG','PRRADIO',
+                                           'BMI','Response','PFSDY','PFS','DTHDY','DTH')]))
+
+
+#######################################################################
+#######################################################################
+data262 <- read.csv(file='262data.csv',header=T)
+data262$study <- 262
+
+names(data262)[names(data262) == "DOSREFDY"] <- "Time"
+names(data262)[names(data262) == "LSCAT"] <- "lesionType"
+names(data262)[names(data262) == "LSNO"] <- "lesionID"
+names(data262)[names(data262) == "LSSITE"] <- "Site"
+names(data262)[names(data262) == "size"] <- "Size"
+names(data262)[names(data262) == "RACCAT"] <- "RACE"
+names(data262)[names(data262) == "ATRT"] <- "TRT"
+names(data262)[names(data262) == "B_METANM"] <- "MET"
+names(data262)[names(data262) == "RAANY5YR"] <- "PRRADIO"
+data262$BMI <- data262$B_WEIGHT/(data262$B_HEIGHT * data262$B_HEIGHT * 0.01 * 0.01) 
+names(data262)[names(data262) == "ROSLRCA"] <- "Response"
+names(data262)[names(data262) == "PFSDYCR"] <- "PFSDY"
+names(data262)[names(data262) == "PFSCR"] <- "PFS"
+
+data262_2 <-  as.data.frame(unique(data262[,c('study','SUBJID','Time','lesionType','lesionID','Site','Size',
+                                           'AGE','SEX','RACE','TRT','MET','DIAGTYPE','PRSURG','PRRADIO',
+                                           'BMI','Response','PFSDY','PFS','DTHDY','DTH')]))
+
+#######################################################################
+#######################################################################
+data263 <- read.csv(file='263data.csv',header=T)
+data263$study <- 263
+
+names(data263)[names(data263) == "DOSREFDY"] <- "Time"
+names(data263)[names(data263) == "LSCAT"] <- "lesionType"
+names(data263)[names(data263) == "LSNO"] <- "lesionID"
+names(data263)[names(data263) == "LSSITE"] <- "Site"
+names(data263)[names(data263) == "size"] <- "Size"
+names(data263)[names(data263) == "RACCAT"] <- "RACE"
+names(data263)[names(data263) == "ATRT"] <- "TRT"
+names(data263)[names(data263) == "B_METACT"] <- "MET"
+data263$BMI <- data263$B_WEIGHT/(data263$B_HEIGHT * data263$B_HEIGHT * 0.01 * 0.01) 
+names(data263)[names(data263) == "ROSLRCA"] <- "Response"
+names(data263)[names(data263) == "PFSDYCR"] <- "PFSDY"
+names(data263)[names(data263) == "PFSCR"] <- "PFS"
+
+data263_2 <-  as.data.frame(unique(data263[,c('study','SUBJID','Time','lesionType','lesionID','Site','Size',
+                                              'AGE','SEX','RACE','TRT','MET','DIAGTYPE','PRSURG','PRRADIO',
+                                              'BMI','Response','PFSDY','PFS','DTHDY','DTH')]))
+#######################################################################
+#######################################################################
+data264 <- read.csv(file='264data.csv',header=T)
+data264$study <- 264
+
+names(data264)[names(data264) == "DOSREFDY"] <- "Time"
+names(data264)[names(data264) == "LSCAT"] <- "lesionType"
+names(data264)[names(data264) == "LSNO"] <- "lesionID"
+names(data264)[names(data264) == "LSSITE"] <- "Site"
+names(data264)[names(data264) == "size"] <- "Size"
+names(data264)[names(data264) == "RACCAT"] <- "RACE"
+names(data264)[names(data264) == "ATRT"] <- "TRT"
+names(data264)[names(data264) == "B_METACT"] <- "MET"
+data264$BMI <- data264$B_WEIGHT/(data264$B_HEIGHT * data264$B_HEIGHT * 0.01 * 0.01) 
+names(data264)[names(data264) == "ROSLRCA"] <- "Response"
+names(data264)[names(data264) == "PFSDYCR"] <- "PFSDY"
+names(data264)[names(data264) == "PFSCR"] <- "PFS"
+
+data264_2 <-  as.data.frame(unique(data264[,c('study','SUBJID','Time','lesionType','lesionID','Site','Size',
+                                              'AGE','SEX','RACE','TRT','MET','DIAGTYPE','PRSURG','PRRADIO',
+                                              'BMI','Response','PFSDY','PFS','DTHDY','DTH')]))
+#######################################################################
+#######################################################################
+data310 <- read.csv(file='310data.csv',header=T)
+data310$study <- 310
+
+names(data310)[names(data310) == "VISITDY"] <- "Time"
+names(data310)[names(data310) == "lesion_type"] <- "lesionType"
+names(data310)[names(data310) == "LSSITE"] <- "Site"
+names(data310)[names(data310) == "size"] <- "Size"
+names(data310)[names(data310) == "ATRT"] <- "TRT"
+names(data310)[names(data310) == "organnum"] <- "MET"
+data310$BMI <- NA
+names(data310)[names(data310) == "PFSDYCR"] <- "PFSDY"
+names(data310)[names(data310) == "PFSCR"] <- "PFS"
+names(data310)[names(data310) == "DTHDYX"] <- "DTHDY"
+names(data310)[names(data310) == "DTHX"] <- "DTH"
+data310$PRSURG <- NA
+data310$PRRADIO <- NA
+data310_2 <-  as.data.frame(unique(data310[,c('study','SUBJID','Time','lesionType','lesionID','Site','Size',
+                                              'AGE','SEX','RACE','TRT','MET','DIAGTYPE','PRSURG','PRRADIO',
+                                              'BMI','Response','PFSDY','PFS','DTHDY','DTH')]))
+
+
+alldata <- read.csv(file='alldata.csv',header=T)
+alldata2 <- rbind(alldata, data137_2, data262_2, data263_2, data264_2, data310_2)
+write.csv(alldata2, file='alldata.csv')
+
+############################################################################################################
+############################################################################################################
+rm(list=ls())
+setwd('C:\\JZ\\UNC\\research\\metastasis\\data\\alldata')
+library(plyr)
+library(dplyr)
+
+alldata <- read.csv(file='alldata.csv',header=T)
+
+patientid <- unique(alldata[,c('study','SUBJID')])
+patientid$patientID <- 1:nrow(patientid)
+
+alldata2 <- merge(patientid, alldata, by=c('study','SUBJID'))
+
+lesionid <- unique(alldata[,c('study','SUBJID','lesionType','lesionID')])
+lesionid$lesionID2 <- 1:nrow(lesionid)
+alldata3 <- merge(lesionid, alldata2, by=c('study','SUBJID','lesionType','lesionID'))
+
+alldata4 <- alldata3[order(alldata3$patientID, alldata3$lesionType , alldata3$Site,alldata3$lesionID2, alldata3$Time),]
+write.csv(alldata4, file='alldata.csv')
