@@ -1,0 +1,20 @@
+# Data analysis for organ response and progression probability
+# cox regression with random effect
+library(survival)
+library(coxme)
+
+relapse <- relapse_o
+relapse$organ2 <- as.factor(relapse$organ2)
+relapse$organ3 <- as.factor(relapse$organ3)
+relapse$TRT2 <- as.factor(relapse$TRT2)
+relapse$TRT3 <- as.factor(relapse$TRT3)
+
+#progression
+regression <- coxme(Surv(relapsetime2, relapse) ~ organ2  +TRT3 + (1 |patientID), data = relapse)
+regression
+exp(confint(regression))
+
+#response
+response <- coxme(Surv(responsetime2, response) ~ organ2  +TRT3 + (1 |patientID), data = relapse)
+response
+exp(confint(response))
