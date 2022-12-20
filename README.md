@@ -1,7 +1,7 @@
 # Mapping Metastasis
 
 # For Data Process
-Please find data.process file for R codes used for processing raw clincial trial data
+Please find Data process file for R codes used for processing raw clincial trial data
 
 # For Data Analysis
 Please find Data analysis file for R codes used for random effect cox proportional model
