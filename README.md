@@ -4,7 +4,7 @@
 Please find data.process file for R codes used for processing raw clincial trial data
 
 # For Data Analysis
-Please find data.analysis file for R codes used for random effect cox proportional model
+Please find Data analysis file for R codes used for random effect cox proportional model
  
 For Monolix codes:
 new.txt is the tumor growth model, 265target_monolix is the demo data, mode265 is the monolix running file.
