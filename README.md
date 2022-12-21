@@ -1,5 +1,10 @@
 # Mapping Metastasis
 
+# Tools and softwares
+Data were processed and analyzed in in R-4.1.0 and RStudio 2022.07.1.
+Tumor growth model was estimated in Monolix2020R1 Lixoft.
+Machine learning algorithms were performed in Spyder (Python 3.8) in Anaconda.
+
 # For Data Process
 Please find Data process file for R codes used for processing raw clincial trial data
 
